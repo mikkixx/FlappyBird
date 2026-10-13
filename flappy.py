@@ -2,6 +2,7 @@ import sys
 import os
 from PySide6.QtWidgets import QApplication, QWidget
 from PySide6.QtGui import QPainter, QPixmap
+from PySide6.QtCore import Qt
 
 class Game(QWidget):
     def __init__(self):
@@ -12,9 +13,15 @@ class Game(QWidget):
         path = os.path.join(os.path.dirname(__file__), "background.png")
         self.bg_img = QPixmap(path).scaled(500, 750)
 
+        bird_path = os.path.join(os.path.dirname(__file__), "bird.png")
+        self.bird_img = QPixmap(bird_path).scaled(140, 110, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.bird_x = 100
+        self.bird_y = 350
+
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.drawPixmap(0, 0, self.bg_img)
+        painter.drawPixmap(self.bird_x, self.bird_y, self.bird_img)
 
 app = QApplication(sys.argv)
 window = Game()
