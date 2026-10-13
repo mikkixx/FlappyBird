@@ -26,6 +26,7 @@ class Game(QWidget):
         self.pipe_x = 350
         self.gap_y = 250
         self.gap = 150
+        self.pipe_speed = 3
 
         self.speed = 0
         self.gravity = 0.5
@@ -59,6 +60,10 @@ class Game(QWidget):
         if self.started:
             self.speed += self.gravity
             self.bird_y += self.speed
+
+            self.pipe_x -= self.pipe_speed
+            if self.pipe_x < -self.pipe_w:
+                self.pipe_x = 500
         self.update()
 
 app = QApplication(sys.argv)
