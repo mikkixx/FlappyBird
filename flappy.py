@@ -18,6 +18,9 @@ class Game(QWidget):
         self.bird_x = 100
         self.bird_y = 350
 
+        self.speed = 0
+        self.gravity = 0.5
+
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_game)
         self.timer.start(16)
@@ -25,9 +28,11 @@ class Game(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.drawPixmap(0, 0, self.bg_img)
-        painter.drawPixmap(self.bird_x, self.bird_y, self.bird_img)
+        painter.drawPixmap(self.bird_x, int(self.bird_y), self.bird_img)
 
     def update_game(self):
+        self.speed += self.gravity
+        self.bird_y += self.speed
         self.update()
 
 app = QApplication(sys.argv)
