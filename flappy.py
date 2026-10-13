@@ -20,6 +20,8 @@ class Game(QWidget):
 
         self.speed = 0
         self.gravity = 0.5
+        self.jump_power = -6
+        self.started = False
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_game)
@@ -30,9 +32,22 @@ class Game(QWidget):
         painter.drawPixmap(0, 0, self.bg_img)
         painter.drawPixmap(self.bird_x, int(self.bird_y), self.bird_img)
 
+    def jump(self):
+            self.started = True
+            self.speed = self.jump_power
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Space:
+            self.jump()
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.jump()
+
     def update_game(self):
-        self.speed += self.gravity
-        self.bird_y += self.speed
+        if self.started:
+            self.speed += self.gravity
+            self.bird_y += self.speed
         self.update()
 
 app = QApplication(sys.argv)
