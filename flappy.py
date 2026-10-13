@@ -1,7 +1,7 @@
 import sys
 import os
 from PySide6.QtWidgets import QApplication, QWidget
-from PySide6.QtGui import QPainter, QPixmap
+from PySide6.QtGui import QPainter, QPixmap, QTransform
 from PySide6.QtCore import Qt, QTimer
 
 class Game(QWidget):
@@ -18,6 +18,15 @@ class Game(QWidget):
         self.bird_x = 100
         self.bird_y = 350
 
+        pipe_path = os.path.join(os.path.dirname(__file__), "pipe.png")
+        self.pipe_w = 200
+        self.pipe_img = QPixmap(pipe_path).scaledToWidth(self.pipe_w, Qt.SmoothTransformation)
+        self.pipe_h = self.pipe_img.height()
+        self.pipe_top_img = self.pipe_img.transformed(QTransform().scale(1, -1))
+        self.pipe_x = 350
+        self.gap_y = 250
+        self.gap = 220
+
         self.speed = 0
         self.gravity = 0.5
         self.jump_power = -6
@@ -30,6 +39,8 @@ class Game(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.drawPixmap(0, 0, self.bg_img)
+        painter.drawPixmap(self.pipe_x, self.gap_y - self.pipe_h, self.pipe_top_img)
+        painter.drawPixmap(self.pipe_x, self.gap_y + self.gap, self.pipe_img)
         painter.drawPixmap(self.bird_x, int(self.bird_y), self.bird_img)
 
     def jump(self):
