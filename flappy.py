@@ -1,5 +1,6 @@
 import sys
 import os
+import random
 from PySide6.QtWidgets import QApplication, QWidget
 from PySide6.QtGui import QPainter, QPixmap, QTransform
 from PySide6.QtCore import Qt, QTimer
@@ -19,13 +20,13 @@ class Game(QWidget):
         self.bird_y = 350
 
         pipe_path = os.path.join(os.path.dirname(__file__), "pipe.png")
-        self.pipe_w = 250
+        self.pipe_w = 350
         self.pipe_img = QPixmap(pipe_path).scaledToWidth(self.pipe_w, Qt.SmoothTransformation)
         self.pipe_h = self.pipe_img.height()
         self.pipe_top_img = self.pipe_img.transformed(QTransform().scale(1, -1))
         self.pipe_x = 350
         self.gap_y = 250
-        self.gap = 150
+        self.gap = 120
         self.pipe_speed = 3
 
         self.speed = 0
@@ -64,6 +65,7 @@ class Game(QWidget):
             self.pipe_x -= self.pipe_speed
             if self.pipe_x < -self.pipe_w:
                 self.pipe_x = 500
+                self.gap_y = random.randint(100, 450)
         self.update()
 
 app = QApplication(sys.argv)
