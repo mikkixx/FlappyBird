@@ -2,7 +2,7 @@ import sys
 import os
 from PySide6.QtWidgets import QApplication, QWidget
 from PySide6.QtGui import QPainter, QPixmap
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 
 class Game(QWidget):
     def __init__(self):
@@ -18,10 +18,17 @@ class Game(QWidget):
         self.bird_x = 100
         self.bird_y = 350
 
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.update_game)
+        self.timer.start(16)
+
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.drawPixmap(0, 0, self.bg_img)
         painter.drawPixmap(self.bird_x, self.bird_y, self.bird_img)
+
+    def update_game(self):
+        self.update()
 
 app = QApplication(sys.argv)
 window = Game()
