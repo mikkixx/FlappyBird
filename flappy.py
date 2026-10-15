@@ -5,6 +5,7 @@ from PySide6.QtWidgets import QApplication, QWidget
 from PySide6.QtGui import QPainter, QPixmap, QTransform, QFont, QColor, QPen
 from PySide6.QtCore import Qt, QTimer
 
+
 class Game(QWidget):
     def __init__(self):
         super().__init__()
@@ -25,7 +26,7 @@ class Game(QWidget):
         self.pipe_img = QPixmap(pipe_path).scaledToWidth(self.pipe_w, Qt.SmoothTransformation)
         self.pipe_h = self.pipe_img.height()
         self.pipe_top_img = self.pipe_img.transformed(QTransform().scale(1, -1))
-        self.pipe_x = 350
+        self.pipe_x = 375
         self.gap_y = 250
         self.gap = 150
         self.pipe_speed = 3
@@ -38,6 +39,7 @@ class Game(QWidget):
         self.score = 0
         self.record_path = os.path.join(os.path.dirname(__file__), "record.txt")
         self.best = self.load_best()
+        self.new_record = False 
         self.passed = False
         self.hit_x = 40
         self.hit_y = 24
@@ -52,24 +54,33 @@ class Game(QWidget):
         painter.drawPixmap(self.pipe_x, self.gap_y - self.pipe_h, self.pipe_top_img)
         painter.drawPixmap(self.pipe_x, self.gap_y + self.gap, self.pipe_img)
         painter.drawPixmap(self.bird_x, int(self.bird_y), self.bird_img)
-        
+
         painter.setPen(QColor("white"))
         painter.setFont(QFont("Arial", 40, QFont.Bold))
         painter.drawText(0, 20, 500, 80, Qt.AlignCenter, str(self.score))
 
+        painter.setFont(QFont("Arial", 18, QFont.Bold))
+        painter.drawText(15, 15, 200, 40, Qt.AlignLeft | Qt.AlignVCenter,
+                         f"Рекорд: {self.best}")
+
         if self.game_over:
             painter.setPen(QPen(QColor(0, 80, 0), 4))
             painter.setBrush(QColor(60, 160, 40))
-            painter.drawRoundedRect(50, 230, 400, 180, 20, 20)
+            painter.drawRoundedRect(50, 210, 400, 220, 20, 20)
 
             painter.setPen(QColor("white"))
             painter.setFont(QFont("Arial", 20, QFont.Bold))
-            painter.drawText(50, 230, 400, 180, Qt.AlignCenter,
-                             f"Ты проиграл!\nСчёт: {self.score}   Рекорд: {self.best}\nНажми пробел, чтобы\nперезапустить игру")
+            painter.drawText(50, 210, 400, 220, Qt.AlignCenter,
+                             f"Ты проиграл!\nСчёт: {self.score}\nНажми пробел, чтобы\nперезапустить игру")
+
+            if self.new_record:
+                painter.setPen(QColor("yellow"))
+                painter.setFont(QFont("Arial", 22, QFont.Bold))
+                painter.drawText(50, 215, 400, 40, Qt.AlignCenter, "Новый рекорд!")
 
     def jump(self):
-            self.started = True
-            self.speed = self.jump_power
+        self.started = True
+        self.speed = self.jump_power
 
     def check_collision(self):
         bird_left = self.bird_x + self.hit_x
@@ -96,7 +107,7 @@ class Game(QWidget):
     def save_best(self):
         with open(self.record_path, "w") as f:
             f.write(str(self.best))
-    
+
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Space:
             if self.game_over:
@@ -118,13 +129,16 @@ class Game(QWidget):
                 self.pipe_x = 375
                 self.gap_y = random.randint(120, 450)
                 self.passed = False
+
             self.check_collision()
+
             pipe_right = self.pipe_x + self.pipe_w - self.pipe_margin
             if not self.passed and pipe_right < self.bird_x:
                 self.score += 1
                 self.passed = True
                 if self.score > self.best:
                     self.best = self.score
+                    self.new_record = True 
         self.update()
 
     def reset_game(self):
@@ -136,10 +150,12 @@ class Game(QWidget):
         self.gap_y = 250
         self.score = 0
         self.passed = False
+        self.new_record = False 
 
     def end_game(self):
         self.game_over = True
         self.save_best()
+
 
 app = QApplication(sys.argv)
 window = Game()
